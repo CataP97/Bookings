@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  nginx:
+    container_name: bookings-nginx
+    build:
+      context: .
+      dockerfile: .docker/nginx/Dockerfile
+    volumes:
+      - .:/var/www/html:ro
+    ports:
+      - '8080:80'
+    depends_on:
+      - php
+
+  php:
+    container_name: bookings-php
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+
+  mysql:
+    container_name: bookings-mysql
+    image: mysql:8.0
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
