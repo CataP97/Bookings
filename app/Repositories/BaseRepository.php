@@ -25,4 +25,9 @@ abstract class BaseRepository
 			return [];
 		}
 	}
+
+	public function exists(string $query, array $parameters = []): bool
+	{
+		return count($this->fetchAll($query, $parameters)) > 1;
+	}
 }

@@ -6,7 +6,7 @@ namespace App\Repositories;
 
 class BookingsRepository extends BaseRepository
 {
-	public function getBookings(): array
+	public function getBookings(int $pageSize, int $skipRecords): array
 	{
 		$query = <<<SQL
             SELECT 
@@ -20,9 +20,32 @@ class BookingsRepository extends BaseRepository
                 bookings 
             ORDER BY 
                 date, start_time
+            LIMIT :pageSize, :skipRecords
         SQL;
 
-		return $this->fetchAll($query);
+		return $this->fetchAll($query, [
+			'pageSize' => $pageSize,
+			'skipRecords' => $skipRecords,
+		]);
+	}
+
+	public function patientHasConflicts(int $patientId, string $date, string $startTime, string $endTime): bool
+	{
+		$query = <<<SQL
+			SELECT 1 
+			FROM bookings
+			WHERE DATE = :date 
+			AND bookings.patient_id = :patientId
+			AND bookings.start_time < :endTime AND bookings.end_time > :startTime
+			LIMIT 1
+		SQL;
+
+		return $this->exists($query, [
+			'date' => $date,
+			'patientId' => $patientId,
+			'startTime' => $startTime,
+			'endTime' => $endTime,
+		]);
 	}
 
 	public function getBookingsByDate(string $date): array

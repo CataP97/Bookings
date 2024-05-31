@@ -22,7 +22,7 @@ readonly class BookingsController
 	public function index(Request $request): mixed
 	{
 		return view('bookings/index', [
-			'bookings' => $this->bookingsRepository->getBookings(),
+			'bookings' => $this->bookingsRepository->getBookings(10, 0),
 		]);
 	}
 
